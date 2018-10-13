@@ -35,7 +35,7 @@ DOCSSITE      = https://seckit.readthedocs.io
 PROJECTSITE   = https://bitbucket.org/account/user/SPLServices/projects/SECKITCEF
 
 #Used by the Copy right tool to place the correct copy right on new files
-COPYRIGHT_LICENSE ?= SPLUNK
+COPYRIGHT_LICENSE_ARG ?= --license-file buildtools/copyright-header/licenses/SPLUNK.erb
 COPYRIGHT_HOLDER ?= $(COMPANY)
 COPYRIGHT_YEAR ?= 2018
 
