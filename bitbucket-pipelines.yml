@@ -1,0 +1,79 @@
+# This is a sample build configuration for Python.
+# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+#image: splseckit/addonbuilder:latest
+clone:
+  depth: full
+
+pipelines:
+  default:
+    - step:
+        name: Package and Test
+        image: splservices/addonbuildimage:latest
+        script:
+            # make the package
+            - make init
+            - make package_test
+        artifacts:
+            - out/**
+    - step:
+        name: AV Scan Packages
+        image: splservices/addonavscanner:latest
+        script:
+            - mkdir test-reports
+            - bats -t /usr/local/bin/addonscanner  | tap-xunit >test-reports/addonavscanner.xml
+        artifacts:
+            - out/**
+  branches:
+    release/*:
+      - step:
+          name: Package and Test
+          image: splservices/addonbuildimage:latest
+          script:
+              # make the package
+              - make init
+              - make package_test
+          artifacts:
+              - out/**
+      - step:
+          name: AV Scan Packages
+          image: splservices/addonavscanner:latest
+          script:
+              - mkdir test-reports
+              - bats -t /usr/local/bin/addonscanner  | tap-xunit >test-reports/addonavscanner.xml
+          artifacts:
+              - out/**
+      - step:
+          name: Publish Package
+          image: splservices/addonbuildimage:latest
+          script:
+              # add version to repo
+              - VERSION_SHORT=$(gitversion /showvariable MajorMinorPatch);curl -X POST --user "${BB_AUTH_USER}:${BB_RW_APP}" https://api.bitbucket.org/1.0/repositories/SPLServices/${BITBUCKET_REPO_SLUG}/issues/versions --data "name=$VERSION_SHORT"
+              - PACKAGES=$(ls out/packages/splunkbase/*.gz); for p in $PACKAGES; do curl -X POST --user "${BB_AUTH_USER}:${BB_RW_APP}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$p"; done
+    master:
+      - step:
+          name: Package and Test
+          image: splservices/addonbuildimage:latest
+          script:
+              # make the package
+              - make init
+              - make package_test
+          artifacts:
+              - out/**
+      - step:
+          name: AV Scan Packages
+          image: splservices/addonavscanner:latest
+          script:
+              - mkdir test-reports
+              - bats -t /usr/local/bin/addonscanner  | tap-xunit >test-reports/addonavscanner.xml
+          artifacts:
+              - out/**
+      - step:
+          name: Publish Package
+          image: splservices/addonbuildimage:latest
+          script:
+              # add version to repo
+              - VERSION_SHORT=$(gitversion /showvariable MajorMinorPatch);curl -X POST --user "${BB_AUTH_USER}:${BB_RW_APP}" https://api.bitbucket.org/1.0/repositories/SPLServices/${BITBUCKET_REPO_SLUG}/issues/versions --data "name=$VERSION_SHORT"
+              - PACKAGES=$(ls out/packages/splunkbase/*.gz); for p in $PACKAGES; do curl -X POST --user "${BB_AUTH_USER}:${BB_RW_APP}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$p"; done
