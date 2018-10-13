@@ -40,3 +40,4 @@ out/
 /.rbenv-version
 /dist
 /test-reports
+src/*/local/*
