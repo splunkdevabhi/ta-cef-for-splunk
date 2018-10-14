@@ -9,6 +9,6 @@
 
 buildtools/splunkaddon.mk:
 	git submodule init
-	git submodule update
+	git submodule update --init --recursive --remote
 
 init: buildtools/splunkaddon.mk
