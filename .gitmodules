@@ -1,0 +1,8 @@
+[submodule "buildtools"]
+	path = buildtools
+	url = https://bitbucket.org/SPLServices/buildtools.git
+	branch = master
+[submodule "deps/SA-Eventgen"]
+	path = deps/SA-Eventgen
+	url = https://bitbucket.org/SPLServices/sa-eventgen.git
+  branch = master
