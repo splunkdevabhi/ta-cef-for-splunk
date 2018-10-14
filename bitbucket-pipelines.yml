@@ -26,6 +26,13 @@ pipelines:
             - bats -t /usr/local/bin/addonscanner  | tap-xunit >test-reports/addonavscanner.xml
         artifacts:
             - out/**
+    - step:
+        name: Publish Package
+        image: splservices/addonbuildimage:latest
+        script:
+            # add version to repo
+            - VERSION_SHORT=$(gitversion /showvariable MajorMinorPatch);curl -X POST --user "${BB_AUTH_USER}:${BB_RW_APP}" https://api.bitbucket.org/1.0/repositories/SPLServices/${BITBUCKET_REPO_SLUG}/issues/versions --data "name=$VERSION_SHORT"
+            - PACKAGES=$(ls out/packages/splunkbase/*.gz); for p in $PACKAGES; do curl -X POST --user "${BB_AUTH_USER}:${BB_RW_APP}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$p"; done
   branches:
     release/*:
       - step:
