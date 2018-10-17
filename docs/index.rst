@@ -45,6 +45,8 @@ Next Steps
 
 This add on provides support for ArcSight as a Vendor product and can be extended for additional products. Review the bitbucket project for additional existing add ons or use one of the existing add ons as a model to develop your own.
 
+Development of connector specific CEF add ons should be accomplished as bespoke add ons for Splunk. Utilizing a transform that will be processed after ``TRANSFORMS-bheader`` and before ``TRANSFORMS-zzzstrip`` (associated to ``cef:file`` and ``cef:syslog`` in ``props.conf``. Set the ``source::`` meta data as required and define all additional knowledge objects using ``source::<newsource>`` in ``props.conf``. All common CEF fields will be extracted and aliased based on the ``[cef]`` source type. 
+
 
 .. toctree::
    :maxdepth: 2
